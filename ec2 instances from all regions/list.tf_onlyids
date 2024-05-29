@@ -1,0 +1,15 @@
+provider "aws" {
+  region = "us-west-2"  # Specify the desired region here
+}
+
+data "aws_regions" "all" {}
+
+data "aws_instances" "all" {
+  instance_state_names = ["pending", "running", "shutting-down", "stopping", "stopped"]
+  instance_tags        = { Name = "*" }
+}
+
+output "all_instances" {
+  value = jsonencode(data.aws_instances.all.ids)
+}
+

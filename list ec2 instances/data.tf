@@ -11,9 +11,10 @@ data "aws_instances" "running" {
 }
 
 output "running_instances" {
-  value = jsonencode(data.aws_instances.running.ids)
+  #value = jsonencode(data.aws_instances.running.ids)
+  value = data.aws_instances.running.ids
 }
 
 output "stopped_instances" {
-  value = jsonencode(data.aws_instances.stopped.ids)
+  value = data.aws_instances.stopped.ids
 }

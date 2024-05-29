@@ -1,0 +1,27 @@
+provider "aws" {
+  region = "us-west-2"
+}
+
+data "aws_instances" "instances" {
+  instance_state_names = ["running", "stopped", "pending", "shutting-down", "stopping", "terminated"]
+}
+
+output "running_instances" {
+  value = {
+    for instance in data.aws_instances.instances : instance.id => {
+      state            = instance.state.name
+      public_ip        = instance.public_ip
+      private_ip       = instance.private_ip
+      instance_type    = instance.instance_type
+      ami_id           = instance.ami.id
+      launch_time      = instance.launch_time
+      volume_id        = instance.root_block_device[0].volume_id
+      vpc_id           = instance.vpc_id
+      subnet_id        = instance.subnet_id
+      elastic_ip       = instance.public_dns
+      key              = instance.key_name
+      security_groups  = instance.security_groups[*].id
+      platform         = instance.platform
+    }
+  }
+}
