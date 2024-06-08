@@ -23,7 +23,7 @@ locals {
       instance_id        = instance.id
       instance_type      = instance.instance_type
       ami_id             = instance.ami
-      launch_time        = format("%s", timeadd(instance.launch_time, "5h30m"))
+      launch_time        = "${formatdate("DD:MM:YY hh:mm:ss", timeadd(instance.launch_time, "5h30m"))} IST"
       tags               = instance.tags
       public_ip          = instance.public_ip
       private_ip         = instance.private_ip
