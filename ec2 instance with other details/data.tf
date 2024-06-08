@@ -18,13 +18,25 @@ data "aws_subnet" "example" {
 
 locals {
   instance_details = {
-    for instance in data.aws_instance.this :
-    instance.id => {
-      instance_id   = instance.id
-      instance_type = instance.instance_type
-      subnet_id     = instance.subnet_id
-      vpc_id        = data.aws_subnet.example[instance.id].vpc_id
-      # Add more instance details as needed
+    for id, instance in data.aws_instance.this :
+    id => {
+      instance_id        = instance.id
+      instance_type      = instance.instance_type
+      ami_id             = instance.ami
+      launch_time        = instance.launch_time
+      public_ip          = instance.public_ip
+      private_ip         = instance.private_ip
+      public_dns         = instance.public_dns
+      private_dns        = instance.private_dns
+      vpc_id             = data.aws_subnet.example[id].vpc_id
+      subnet_id          = instance.subnet_id
+      elastic_ip         = instance.ebs_optimized ? instance.public_ip : null
+      key_name           = instance.key_name
+      security_groups    = join(", ", instance.security_groups)
+      tags               = instance.tags
+      volume_ids         = join(", ", [for volume in instance.ebs_block_device : volume.volume_id])
+      volume_sizes       = join(", ", [for volume in instance.ebs_block_device : volume.volume_size])
+      # Add more instance attributes as needed
     }
   }
 }
