@@ -3,16 +3,12 @@ provider "aws" {
 }
 
 data "aws_instances" "instances" {
-instance_state_names = ["running", "stopped","pending", "shutting-down", "stopping"] #, "terminated"]
+  instance_state_names = ["running", "stopped", "pending", "shutting-down", "stopping"]
 }
 
 data "aws_instance" "this" {
-  for_each = toset(data.aws_instances.instances.ids)
+  for_each    = toset(data.aws_instances.instances.ids)
   instance_id = each.key
-}
-
-output "instance_details" {
-  value = data.aws_instance.this[*]
 }
 
 data "aws_subnet" "example" {
@@ -20,10 +16,19 @@ data "aws_subnet" "example" {
   id       = each.value.subnet_id
 }
 
-output "subnet_ids" {
-  value = values(data.aws_subnet.example)[*].id
+locals {
+  instance_details = {
+    for instance in data.aws_instance.this :
+    instance.id => {
+      instance_id   = instance.id
+      instance_type = instance.instance_type
+      subnet_id     = instance.subnet_id
+      vpc_id        = data.aws_subnet.example[instance.id].vpc_id
+      # Add more instance details as needed
+    }
+  }
 }
 
-output "vpc_ids" {
-  value = values(data.aws_subnet.example)[*].vpc_id
+output "instance_details" {
+  value = local.instance_details
 }
