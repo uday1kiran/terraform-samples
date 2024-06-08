@@ -1,55 +1,29 @@
 provider "aws" {
-  region = "us-west-2"
+  region = "us-west-1"
 }
 
 data "aws_instances" "instances" {
-instance_state_names = ["running", "stopped","pending", "shutting-down", "stopping", "terminated"]
+instance_state_names = ["running", "stopped","pending", "shutting-down", "stopping"] #, "terminated"]
 }
-/*
-output "running_instances" {
- 
-  value = data.aws_instances.instances.ids
-}
-*/
+
 data "aws_instance" "this" {
   for_each = toset(data.aws_instances.instances.ids)
   instance_id = each.key
 }
-output "instance_arns" {
+
+output "instance_details" {
   value = data.aws_instance.this[*]
 }
 
-/*
-output "instance_details" {
-  value = { for instance in data.aws_instances.instances.instances : instance.id =>
-    {
-      ami          = instance.ami
-      state        = instance.state
-      launch_time  = instance.launch_time
-    }
-  }
+data "aws_subnet" "example" {
+  for_each = data.aws_instance.this
+  id       = each.value.subnet_id
 }
 
-
-output "instances_details" {
-  value = [
-    for instance in data.aws_instances.instances.ids : {
-      name                = aws_instance.instance[instance].tags["Name"]
-      instance_id         = aws_instance.instance[instance].id
-      state               = aws_instance.instance[instance].state.Name
-      public_ip           = aws_instance.instance[instance].public_ip
-      private_ip          = aws_instance.instance[instance].private_ip
-      instance_type       = aws_instance.instance[instance].instance_type
-      ami_id              = aws_instance.instance[instance].image_id
-      launch_time         = aws_instance.instance[instance].launch_time
-      volume_id           = aws_instance.instance[instance].root_block_device[0].volume_id
-      vpc_id              = aws_instance.instance[instance].vpc_id
-      subnet_id           = aws_instance.instance[instance].subnet_id
-      elastic_ip          = coalesce(aws_eip.eip[instance].public_ip, "")
-      key_name            = aws_instance.instance[instance].key_name
-      security_groups     = aws_instance.instance[instance].security_groups[*].name
-      platform_tag_value  = aws_instance.instance[instance].tags["Platform"]
-    }
-  ]
+output "subnet_ids" {
+  value = values(data.aws_subnet.example)[*].id
 }
-*/
+
+output "vpc_ids" {
+  value = values(data.aws_subnet.example)[*].vpc_id
+}
