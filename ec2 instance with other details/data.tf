@@ -17,6 +17,11 @@ data "aws_subnet" "example" {
 }
 
 locals {
+  eips = {
+    for instance in data.aws_instance.this :
+    instance.id => try(aws_eip.this[instance.id], null)
+  }
+
   instance_details = {
     for id, instance in data.aws_instance.this :
     id => {
@@ -31,7 +36,7 @@ locals {
       private_dns        = instance.private_dns
       vpc_id             = data.aws_subnet.example[id].vpc_id
       subnet_id          = instance.subnet_id
-      elastic_ip         = instance.ebs_block_device[*].volume_id
+      elastic_ip         = try(local.eips[id].public_ip, null)
       key_name           = instance.key_name
       security_groups    = instance.security_groups
       root_block_device  = instance.root_block_device
@@ -43,4 +48,14 @@ locals {
 
 output "instance_details" {
   value = local.instance_details
+}
+
+resource "aws_eip" "this" {
+  for_each = {
+    for id, instance in data.aws_instance.this :
+    id => instance
+    if can(instance.public_ip)
+  }
+  vpc      = true
+  instance = each.value.id
 }
