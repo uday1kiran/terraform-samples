@@ -20,38 +20,23 @@ locals {
   instance_details = {
     for id, instance in data.aws_instance.this :
     id => {
-      instance_id     = instance.id
-      instance_type   = instance.instance_type
-      ami_id          = instance.ami
-      launch_time     = instance.launch_time
-      tags            = instance.tags
-      public_ip       = instance.public_ip
-      private_ip      = instance.private_ip
-      public_dns      = instance.public_dns
-      private_dns     = instance.private_dns
-      vpc_id          = data.aws_subnet.example[id].vpc_id
-      subnet_id       = instance.subnet_id
-      elastic_ip      = instance.ebs_block_device[*].volume_id
-      key_name        = instance.key_name
-      security_groups = instance.security_groups
-      root_block_device = [
-        for device in instance.root_block_device : {
-          volume_id   = device.volume_id
-          volume_size = device.volume_size
-          volume_type = device.volume_type
-          device_name = device.device_name
-          # Add more root volume attributes as needed
-        }
-      ]
-      ebs_block_device = [
-        for device in instance.ebs_block_device : {
-          volume_id   = device.volume_id
-          volume_size = device.volume_size
-          volume_type = device.volume_type
-          device_name = device.device_name
-          # Add more EBS volume attributes as needed
-        }
-      ]
+      instance_id        = instance.id
+      instance_type      = instance.instance_type
+      ami_id             = instance.ami
+      launch_time        = format("%s", timeadd(instance.launch_time, "5h30m"))
+      tags               = instance.tags
+      public_ip          = instance.public_ip
+      private_ip         = instance.private_ip
+      public_dns         = instance.public_dns
+      private_dns        = instance.private_dns
+      vpc_id             = data.aws_subnet.example[id].vpc_id
+      subnet_id          = instance.subnet_id
+      elastic_ip         = instance.ebs_block_device[*].volume_id
+      key_name           = instance.key_name
+      security_groups    = instance.security_groups
+      root_block_device  = instance.root_block_device
+      ebs_block_devices  = instance.ebs_block_device
+      # Add more instance attributes as needed
     }
   }
 }
