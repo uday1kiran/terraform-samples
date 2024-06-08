@@ -31,12 +31,10 @@ locals {
       private_dns        = instance.private_dns
       vpc_id             = data.aws_subnet.example[id].vpc_id
       subnet_id          = instance.subnet_id
-      elastic_ip         = instance.ebs_block_device[*].volume_id
       key_name           = instance.key_name
       security_groups    = instance.security_groups
       root_block_device  = instance.root_block_device
       ebs_block_devices  = instance.ebs_block_device
-      # Add more instance attributes as needed
     }
   }
 }
