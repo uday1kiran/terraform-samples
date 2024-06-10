@@ -39,3 +39,7 @@ variable "vpc_tags" {
     Environment = "dev"
   }
 }
+
+variable "root_volume_size" {
+  default = 60
+}
