@@ -55,6 +55,13 @@ resource "aws_instance" "ec2_instance" {
       "sudo growpart /dev/xvda 1",
       "sudo resize2fs /dev/xvda1"
     ]
+
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = tls_private_key.ssh_key.private_key_pem
+      host        = self.public_dns
+    }
   }
 }
 
