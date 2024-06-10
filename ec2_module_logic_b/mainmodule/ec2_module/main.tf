@@ -52,26 +52,24 @@ resource "aws_instance" "ec2_instance" {
               #!/bin/bash
               apt-get update
               apt-get install -y cloud-utils
-              growpart /dev/xvda 1
-              resize2fs /dev/xvda1
               EOF
 
   
-  # provisioner "remote-exec" {
-  #   inline = [
-  #     "sudo apt-get update",
-  #     "sudo apt-get install -y cloud-utils",
-  #     "sudo growpart /dev/xvda 1",
-  #     "sudo resize2fs /dev/xvda1"
-  #   ]
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt-get update",
+      "sudo apt-get install -y cloud-utils",
+      "sudo growpart /dev/xvda 1",
+      "sudo resize2fs /dev/xvda1"
+    ]
 
-  #   connection {
-  #     type        = "ssh"
-  #     user        = "ubuntu"
-  #     private_key = tls_private_key.ssh_key.private_key_pem
-  #     host        = self.public_dns
-  #   }
-  # }
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = tls_private_key.ssh_key.private_key_pem
+      host        = self.public_dns
+    }
+  }
 
 }
 resource "aws_security_group" "ec2_sg" {
@@ -82,7 +80,7 @@ resource "aws_security_group" "ec2_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["103.144.232.244/32"] #["0.0.0.0/0"]
+    cidr_blocks = ["152.58.222.138/32"] #["0.0.0.0/0"]
   }
   
   egress {
