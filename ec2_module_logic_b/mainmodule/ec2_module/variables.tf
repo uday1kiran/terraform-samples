@@ -1,4 +1,3 @@
-# ec2_module/variables.tf
 variable "instance_count" {
   description = "Number of EC2 instances to create"
 }

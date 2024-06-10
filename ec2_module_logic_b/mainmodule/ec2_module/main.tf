@@ -1,4 +1,3 @@
-# ec2_module/main.tf
 data "aws_ami" "ubuntu" {
   most_recent = true
   

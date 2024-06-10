@@ -18,7 +18,7 @@ module "vpc" {
   name = var.vpc_name
   cidr = var.vpc_cidr
   
-  #azs             = var.vpc_azs
+  azs             = data.aws_availability_zones.available.names
   private_subnets = var.private_subnets
   public_subnets  = var.public_subnets
   
@@ -26,4 +26,8 @@ module "vpc" {
   single_nat_gateway = true
   
   tags = var.vpc_tags
+}
+
+data "aws_availability_zones" "available" {
+  state = "available"
 }

@@ -1,4 +1,3 @@
-# variables.tf
 variable "instance_count" {
   description = "Number of EC2 instances to create"
   default     = 1
@@ -22,11 +21,6 @@ variable "vpc_name" {
 variable "vpc_cidr" {
   description = "CIDR block for the VPC"
   default     = "10.0.0.0/16"
-}
-
-variable "vpc_azs" {
-  description = "Availability zones for the VPC"
-  default     = ["us-west-1a", "us-west-1b"]
 }
 
 variable "private_subnets" {
