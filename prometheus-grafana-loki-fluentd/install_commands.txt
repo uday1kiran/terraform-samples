@@ -1,0 +1,4 @@
+helm plugin install https://github.com/databus23/helm-diff
+helm plugin install https://github.com/futuresimple/helm-secrets
+helmfile diff  # to preview the changes
+helmfile apply # to apply the changes and install/upgrade the charts

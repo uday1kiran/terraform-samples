@@ -1,0 +1,96 @@
+repositories:
+  - name: stable
+    url: https://charts.helm.sh/stable
+  - name: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
+  - name: loki
+    url: https://grafana.github.io/loki/charts
+
+releases:
+  - name: prometheus
+    namespace: monitoring
+    chart: prometheus-community/prometheus
+    version: 15.0.1
+    values:
+      - alertmanager:
+          enabled: true
+        server:
+          persistentVolume:
+            enabled: true
+            size: 10Gi
+
+  - name: grafana
+    namespace: monitoring
+    chart: grafana/grafana
+    version: 6.17.4
+    values:
+      - persistence:
+          enabled: true
+          size: 5Gi
+        datasources:
+          datasources.yaml:
+            apiVersion: 1
+            datasources:
+            - name: Prometheus
+              type: prometheus
+              url: http://prometheus-server.monitoring.svc.cluster.local
+              access: proxy
+              isDefault: true
+        dashboardProviders:
+          dashboardproviders.yaml:
+            apiVersion: 1
+            providers:
+            - name: 'default'
+              orgId: 1
+              folder: ''
+              type: file
+              disableDeletion: false
+              editable: true
+              options:
+                path: /var/lib/grafana/dashboards/default
+        dashboards:
+          default:
+            prometheus-stats:
+              gnetId: 2
+              revision: 2
+              datasource: Prometheus
+        alerting:
+          rules:
+            groups:
+            - name: example
+              rules:
+              - alert: HighRequestLatency
+                expr: job:request_latency_seconds:mean5m{job="myjob"} > 0.5
+                for: 10m
+                labels:
+                  severity: page
+                annotations:
+                  summary: High request latency
+
+  - name: fluentd
+    namespace: logging
+    chart: stable/fluentd
+    version: 2.5.2
+    values:
+      - output:
+          host: loki.logging.svc.cluster.local
+          port: 3100
+          buffer:
+            type: file
+            path: /var/log/fluentd-buffers/loki.buffer
+            flush_mode: interval
+            retry_type: exponential_backoff
+            flush_thread_count: 2
+            flush_interval: 10s
+            retry_forever: true
+            retry_max_interval: 30
+            chunk_limit_size: 2M
+            queue_limit_length: 8
+            overflow_action: block
+
+  - name: loki
+    namespace: logging
+    chart: loki/loki-stack
+    version: 2.3.1

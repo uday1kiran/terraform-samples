@@ -1,0 +1,24 @@
+alertmanager:
+  enabled: true
+  ingress:
+    enabled: true
+    hosts:
+      - alertmanager.example.com
+    annotations:
+      kubernetes.io/ingress.class: "nginx"
+  alertmanagerSpec:
+    replicas: 2
+
+prometheus:
+  alerting:
+    enabled: true
+    alertmanagers:
+      - name: alertmanager
+        url: http://alertmanager.monitoring.svc:9093
+  server:
+    ingress:
+      enabled: true
+      hosts:
+        - prometheus.example.com
+      annotations:
+        kubernetes.io/ingress.class: "nginx"

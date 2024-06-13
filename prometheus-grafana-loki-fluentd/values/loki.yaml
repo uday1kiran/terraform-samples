@@ -1,0 +1,7 @@
+promtail:
+  enabled: false
+
+storage:
+  enabled: true
+  peristentVolume:
+    enabled: false

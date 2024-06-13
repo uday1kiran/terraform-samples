@@ -1,0 +1,13 @@
+helmfile sync
+
+
+
+#checking
+helm list -A 
+kubectl get pods -n monitoring
+kubectl get pods -n logging
+kubectl port-forward -n monitoring svc/grafana 3000:80
+
+#to access grafana 
+kubectl port-forward -n monitoring svc/grafana 3000:80
+## open http://localhost:3000

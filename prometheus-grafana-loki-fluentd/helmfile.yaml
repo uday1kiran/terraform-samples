@@ -1,0 +1,38 @@
+repositories:
+  - name: stefanprodan/podinfo
+    url: https://stefanprodan.github.io/podinfo
+  - name: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
+  - name: grafana-loki
+    url: https://grafana.github.io/loki/charts
+
+helmDefaults:
+  wait: true
+  timeout: 300s
+
+releases:
+  - name: prometheus
+    namespace: monitoring
+    chart: prometheus-community/kube-prometheus-stack
+    values:
+      - values/prometheus.yaml
+  - name: grafana
+    namespace: monitoring
+    chart: grafana/grafana
+    version: 6.10.2
+    values:
+      - values/grafana.yaml
+  - name: fluentd
+    namespace: logging
+    chart: fluentd/fluentd
+    version: 1.11.3
+    values:
+      - values/fluentd.yaml
+  - name: loki
+    namespace: monitoring
+    chart: grafana/loki-stack
+    version: 2.3.0
+    values:
+      - values/loki.yaml

@@ -1,0 +1,19 @@
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        url: http://prometheus-server.monitoring.svc:80
+        access: proxy
+        isDefault: true
+
+ingress:
+  enabled: true
+  hosts:
+    - grafana.example.com
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+
+adminUser: admin
+adminPassword: your_admin_password
