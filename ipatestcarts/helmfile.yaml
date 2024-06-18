@@ -1,0 +1,161 @@
+repositories:
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+  - name: elastic
+    url: https://helm.elastic.co
+  - name: ankane
+    url: https://ankane.github.io/helm-charts
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
+  - name: jaegertracing
+    url: https://jaegertracing.github.io/helm-charts
+  - name: obsidiandynamics
+    url: https://obsidiandynamics.github.io/helm-charts
+
+releases:
+  - name: keycloak
+    chart: bitnami/keycloak
+    version: 8.0.0
+    values:
+      - image:
+          repository: quay.io/keycloak
+          tag: 18.0.0
+      - ingress:
+          enabled: true
+          hosts:
+            - host: idp-alpha.ipas-test.com
+              paths:
+                - path: /
+                  pathType: Prefix
+      - nodeSelector:
+          keycloak: "yes"
+
+  - name: kie-server
+    chart: bitnami/jbpm-server
+    version: 2.0.0
+    values:
+      - image:
+          repository: jboss/jbpm-server-full
+          tag: 7.59.0.Final
+      - ingress:
+          enabled: true
+          hosts:
+            - host: bpm-alpha.ipas-test.com
+              paths:
+                - path: /
+                  pathType: Prefix
+      - nodeSelector:
+          kie-server: "yes"
+
+  - name: elasticsearch
+    chart: elastic/elasticsearch
+    version: 7.17.5
+    values:
+      - ingress:
+          enabled: true
+          hosts:
+            - host: idx-alpha.ipas-test.com
+              paths:
+                - path: /
+                  pathType: Prefix
+      - nodeSelector:
+          elasticsearch: "yes"
+
+  - name: kibana
+    chart: elastic/kibana
+    version: 7.17.5
+    values:
+      - ingress:
+          enabled: true
+          hosts:
+            - host: log-alpha.ipas-test.com
+              paths:
+                - path: /
+                  pathType: Prefix
+      - nodeSelector:
+          kibana: "yes"
+
+  - name: pghero
+    chart: ankane/pghero
+    version: 2.2.0
+    values:
+      - image:
+          repository: ankane/pghero
+          tag: v3.3.3
+      - ingress:
+          enabled: true
+          hosts:
+            - host: dba-alpha.ipas-test.com
+              paths:
+                - path: /
+                  pathType: Prefix
+      - nodeSelector:
+          pghero: "yes"
+
+  - name: kubernetes-dashboard
+    chart: bitnami/kubernetes-dashboard
+    version: 5.0.0
+    values:
+      - image:
+          repository: kubernetes/dashboard
+          tag: v2.6.0
+      - ingress:
+          enabled: true
+          hosts:
+            - host: kub-alpha.ipas-test.com
+              paths:
+                - path: /
+                  pathType: Prefix
+      - nodeSelector:
+          kubernetes-dashboard: "yes"
+
+  - name: grafana
+    chart: grafana/grafana
+    version: 6.17.5
+    values:
+      - image:
+          repository: grafana/grafana
+          tag: 7.3.7
+      - ingress:
+          enabled: true
+          hosts:
+            - host: das-monitor.ipas-test.com
+              paths:
+                - path: /
+                  pathType: Prefix
+
+  - name: jaeger-query
+    chart: jaegertracing/jaeger
+    version: 0.45.0
+    values:
+      - query:
+          image:
+            repository: jaegertracing/jaeger-query
+            tag: 1.45.0
+      - query:
+          ingress:
+            enabled: true
+            hosts:
+              - host: trc-monitor.ipas-test.com
+                paths:
+                  - path: /
+                    pathType: Prefix
+      - nodeSelector:
+          jaeger-query: "yes"
+
+  - name: kafdrop
+    chart: obsidiandynamics/kafdrop
+    version: 3.31.0
+    values:
+      - image:
+          repository: obsidiandynamics/kafdrop
+          tag: 3.31.0
+      - ingress:
+          enabled: true
+          hosts:
+            - host: msg-alpha.ipas-test.com
+              paths:
+                - path: /
+                  pathType: Prefix
+      - nodeSelector:
+          kafdrop: "yes"
