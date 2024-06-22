@@ -1,5 +1,42 @@
+## CREATE A KEY-PAIR in console and reference that in ec2 instances below.
+
 provider "aws" {
   region = "us-west-1"
+}
+
+data "template_file" "user_data" {
+  template = <<-EOF
+              #!/bin/bash
+
+              # Update packages
+              sudo apt-get update
+
+              # Install dependencies
+              sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
+
+              # Add Docker GPG key
+              curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+              # Set up the Docker stable repository
+              echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+              # Update packages again
+              sudo apt-get update
+
+              # Install Docker
+              sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+
+              # Add the current user to the docker group
+              sudo usermod -aG docker $USER
+
+              # Install Kind
+              curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.15.0/kind-linux-amd64
+              chmod +x ./kind
+              sudo mv ./kind /usr/local/bin/kind
+
+              # Create a simple Kind cluster (optional)
+              kind create cluster
+              EOF
 }
 
 data "aws_ami" "ubuntu" {
@@ -7,7 +44,7 @@ data "aws_ami" "ubuntu" {
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+    values = ["ubuntu/images/hvm-ssd*/ubuntu-*-24.04-amd64-server-*"]
   }
 
   filter {
@@ -132,13 +169,5 @@ resource "aws_instance" "kind" {
     Name = "kind"
   }
 
-  user_data = <<-EOF
-              #!/bin/bash
-              apt-get update
-              apt-get install -y docker.io
-              curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.11.1/kind-linux-amd64
-              chmod +x ./kind
-              mv ./kind /usr/local/bin/kind
-              kind create cluster
-              EOF
+  user_data = data.template_file.user_data.rendered
 }
