@@ -27,7 +27,9 @@ data "template_file" "user_data" {
               sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 
               # Add the current user to the docker group
+              sudo groupadd docker
               sudo usermod -aG docker $USER
+              newgrp docker
 
               # Install Kind
               curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.15.0/kind-linux-amd64
